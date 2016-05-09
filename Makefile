@@ -18,3 +18,6 @@ whirlios.img: bootload.e kernel.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2
+	
+test: whirlios.img
+	bochs -f ubuntu.bxrc
