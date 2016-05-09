@@ -38,7 +38,7 @@ void appendSector(sector_t sec) {
 
 char *getSector(int index) {
   for (int i = 0; i < 1000; i++) {
-    if (sectors[i].index = index)
+    if (sectors[i].index == index)
       return sectors[i].data;
   }
   return NULL;
@@ -142,6 +142,7 @@ int addToDirectory(int index, int fileInd) {
   int i = 8;
   while (sector[i] || sector[i+1])
     i += 2;
+  printf("Adding index %d at offset %d in sector %d ...\n", fileInd, i, index);
   sector[i+1] = fileInd >> 8;
   sector[i] = fileInd & 0xFF;
 }
@@ -154,8 +155,10 @@ int main(int argc, char *argv[]) {
   totalSectors = 0;
   
   int root = writeDirectory("");
-  int test = writeFile("test", "test.txt");
-  addToDirectory(root, test);
+  int bin = writeDirectory("bin");
+  addToDirectory(root, bin);
+  int wsh = writeFile("wsh", "test.txt");
+  addToDirectory(bin, wsh);
   
   appendSector(writeSUT());
   
