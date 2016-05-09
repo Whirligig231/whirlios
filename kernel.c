@@ -44,8 +44,11 @@ void printChar(char c) {
 
 void printString(char *str) {
   int i;
-  for (i = 0; str[i]; i++)
+  for (i = 0; str[i]; i++) {
+    if (str[i] == '\n')
+      printChar('\r');
     printChar(str[i]);
+  }
 }
 
 void readSector(char *buffer, int sector) {
