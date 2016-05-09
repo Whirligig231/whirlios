@@ -14,10 +14,11 @@ kernel.e: kernel.o kernel_lib.o
 bootload.e: bootload.asm
 	nasm -o bootload.e bootload.asm
 	
-whirlios.img: bootload.e kernel.e
+whirlios.img: bootload.e kernel.e test.txt
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2
+	dd if=test.txt of=whirlios.img bs=512 conv=notrunc seek=16
 	
 test: whirlios.img
 	bochs -f ubuntu.bxrc
