@@ -142,8 +142,8 @@ int addToDirectory(int index, int fileInd) {
   int i = 8;
   while (sector[i] || sector[i+1])
     i += 2;
-  sector[i] = fileInd >> 8;
-  sector[i+1] = fileInd & 0xFF;
+  sector[i+1] = fileInd >> 8;
+  sector[i] = fileInd & 0xFF;
 }
 
 int main(int argc, char *argv[]) {
