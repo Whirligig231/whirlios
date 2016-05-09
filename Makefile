@@ -20,7 +20,16 @@ kernel.e: kernel.o kernel_lib.o
 bootload.e: bootload.asm
 	nasm -o bootload.e bootload.asm
 	
-whirlios.img: diskutility bootload.e kernel.e test.txt
+lib.o: lib.asm
+	as86 -o lib.o lib.asm
+	
+wsh.o: wsh.c
+	bcc -ansi -c -o wsh.o wsh.c
+	
+wsh.e: wsh.o lib.o
+	ld86 -o wsh.e -d wsh.o lib.o
+	
+whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2

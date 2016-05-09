@@ -84,7 +84,7 @@ int fileGetSector(char *buffer, int file, int *sector) {
   } else {
     return 2; /* Unsupported indexing mode */
   }
-  *sector++;
+  (*sector)++;
   return 0;
 }
 
@@ -125,8 +125,33 @@ int findInDirectory(int directory, char *name) {
   return -1;
 }
 
-int handleInterrupt21() {
-  /* Placeholder */
+int runProgram(int file) {
+  int sector;
+  char buffer[512];
+  int i;
+  
+  sector = 0;
+  while (sector < 32) {
+    /* TODO: error checking on this call */
+    if (fileGetSector(buffer, file, &sector))
+      break;
+
+    for (i = 0; i < 512; i++) {
+      putInMemory(0x2000, (sector - 1)*512 + i, buffer[i]);
+    }
+  }
+  
+  launchProgram(0x2000);
+}
+
+void handleInterrupt21(int ax, int bx, int cx, int dx) {
+  if (ax == 0x4953) {
+    /* Print string */
+    printString((char*) bx);
+  } else {
+    /* Incorrect interrupt -- for now, do nothing */
+    return;
+  }
 }
 
 int handleTimerInterrupt() {
@@ -135,7 +160,7 @@ int handleTimerInterrupt() {
 
 void runkernel() {
   int sec;
-  sec = 16;
+  sec = getRoot();
   sec = findInDirectory(sec, "bin");
   if (sec == -1) {
     printString("Error: no bin directory!");
@@ -146,5 +171,7 @@ void runkernel() {
     printString("Error: no shell executable!");
     return;
   }
-  printString("TODO: Actually run the shell!");
+  
+  makeInterrupt21();
+  runProgram(sec);
 }

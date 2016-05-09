@@ -157,8 +157,10 @@ int main(int argc, char *argv[]) {
   int root = writeDirectory("");
   int bin = writeDirectory("bin");
   addToDirectory(root, bin);
-  int wsh = writeFile("wsh", "test.txt");
+  int wsh = writeFile("wsh", "wsh.e");
   addToDirectory(bin, wsh);
+  int test = writeFile("test", "test.txt");
+  addToDirectory(root, test);
   
   appendSector(writeSUT());
   
