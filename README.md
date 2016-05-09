@@ -1,6 +1,8 @@
 # WhirliOS
 Whirligig231's 16-Bit Operating System
 
+This is a homebrew 16-bit operating system. It should run on any modern computer with a floppy drive and x86 architecture (and possibly even not-very-modern computers, though this is untested). The purpose of this project is to gain experience writing low-level code, and simply for the fun of it. I'm weird that way.
+
 **N.B.** Most of the info below currently relates to features planned for v0.1. Expect next to none of it to actually be implemented yet.
 
 ## Building and Installing WhirliOS
