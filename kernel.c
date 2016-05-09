@@ -2,6 +2,7 @@ void runkernel();
 
 int main() {
 	runkernel();
+  while (1) continue;
 }
 
 int div(int a, int b) {
@@ -87,6 +88,43 @@ int fileGetSector(char *buffer, int file, int *sector) {
   return 0;
 }
 
+int getRoot() {
+  return 16;
+}
+
+int findInDirectory(int directory, char *name) {
+  /* TODO: Extend this to directories with index mode 1 */
+  /* TODO: Actually check that it's a directory */
+  char name2[8];
+  char buf[512];
+  char first[512];
+  int i;
+  int offset;
+  int index;
+  int sector;
+  int found;
+  sector = 0;
+  for (i = 0; i < 8 && name[i]; i++)
+    name2[i] = name[i];
+  for (; i < 8; i++)
+    name2[i] = '\0';
+  fileGetSector(buf, directory, &sector);
+  for (offset = 0; offset < 512; offset += 2) {
+    index = (buf[offset+1] << 8) + buf[offset];
+    if (!index)
+      break;
+    readSector(first, index);
+    found = 1;
+    for (i = 0; i < 8; i++) {
+      if ((first[i] & 0x7F) != name2[i])
+        found = 0;
+    }
+    if (found)
+      return index;
+  }
+  return -1;
+}
+
 int handleInterrupt21() {
   /* Placeholder */
 }
@@ -96,11 +134,17 @@ int handleTimerInterrupt() {
 }
 
 void runkernel() {
-  char buf[512];
   int sec;
-  int n;
-  sec = 0;
-  n = fileGetSector(buf, 17, &sec);
-  printString(buf);
-  while (1) continue;
+  sec = 16;
+  sec = findInDirectory(sec, "bin");
+  if (sec == -1) {
+    printString("Error: no bin directory!");
+    return;
+  }
+  sec = findInDirectory(sec, "wsh");
+  if (sec == -1) {
+    printString("Error: no shell executable!");
+    return;
+  }
+  printString("TODO: Actually run the shell!");
 }
