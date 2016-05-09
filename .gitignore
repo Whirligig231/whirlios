@@ -1,0 +1,4 @@
+*.o
+*.e
+*.img
+bochsout.txt

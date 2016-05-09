@@ -8,7 +8,8 @@ Whirligig231's 16-Bit Operating System
 WhirliOS can be built using the included Makefile, which requires the following tools:
 
 * bcc (Bruce's C Compiler): for compiling the operating system's C code
-* as86: for assembling the 16-bit ASM code
+* as86: for assembling some of the 16-bit ASM code
+* nasm: for assembling some of the other ASM code
 * ld86: for linking the machine code files
 * dd: for copying files onto the disk drive
 * gcc: for compiling utilities
