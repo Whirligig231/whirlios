@@ -1,7 +1,11 @@
 #include "lib/ilib.h"
 
 int main() {
-  iwrites("I am a shell.\n");
-  iwrites("Hey, I'm still a shell!\n");
+  char buffer[80];
+  iwrites("Type something: ");
+  ireads(buffer);
+  iwrites("You typed ");
+  iwrites(buffer);
+  iwrites("!\n");
   while (1) continue;
 }

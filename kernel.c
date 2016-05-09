@@ -51,6 +51,78 @@ void printString(char *str) {
   }
 }
 
+char readChar() {
+  return interrupt(0x16, 0, 0, 0, 0) & 0xFF;
+}
+
+int readKey() {
+  return interrupt(0x16, 0, 0, 0, 0);
+}
+
+void readString(char *str) {
+  /* TODO: Remove buffer overflow */
+  int i, max, j;
+  int key;
+  char ch;
+  i = 0;
+  max = 0;
+  j = 0;
+  ch = 0;
+  while (ch != '\r') {
+    key = readKey();
+    ch = key & 0xFF;
+    
+    if (ch == '\r')
+      break;
+    
+    if (ch == 8) {
+      /* Backspace */
+      if (i == 0)
+        continue;
+      i--;
+      printChar(8);
+      for (j = i; j < max - 1; j++) {
+        str[j] = str[j+1];
+        printChar(str[j]);
+      }
+      printChar(' ');
+      for (j = max; j > i; j--) {
+        printChar(8);
+      }
+      max--;
+      continue;
+    }
+    
+    if (ch == 0) {
+      if (key >> 8 == 0x4D) {
+        /* Right arrow */
+        if (i < max) {
+          printChar(str[i]);
+          i++;
+        }
+      } else if (key >> 8 == 0x4B) {
+        /* Left arrow */
+        if (i > 0) {
+          i--;
+          printChar(8);
+        }
+      }
+      continue;
+    }
+    
+    str[i] = ch;
+    printChar(ch);
+    i++;
+    if (i > max)
+      max = i;
+  }
+  
+  
+  str[max] = '\0';
+  printChar('\r');
+  printChar('\n');
+}
+
 void readSector(char *buffer, int sector) {
   interrupt(0x13, 0x0201, buffer, ((div(sector, 36) << 8) | mod(sector, 18)) + 1, (div(sector, 18) & 1) << 8);
 }
@@ -151,6 +223,18 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   if (ax == 0x4953) {
     /* Print string */
     printString((char*) bx);
+  } else if (ax == 0x4943) {
+    /* Print char */
+    printChar((char) bx);
+  } else if (ax == 0x4973) {
+    /* Read string */
+    readString((char*) bx);
+  } else if (ax == 0x4963) {
+    /* Read char */
+    *((char*) bx) = readChar();
+  } else if (ax == 0x496B) {
+    /* Read key */
+    *((int*) bx) = readKey();
   } else {
     /* Incorrect interrupt -- for now, do nothing */
     return;
