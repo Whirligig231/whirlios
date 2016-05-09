@@ -61,6 +61,8 @@ Directories are simply files containing the indices of sectors, two bytes to a s
 
 File lengths are restricted to lengths that fill sectors. An unindexed file is always 504 B in size, while an indexed file's size is always a multiple of 512 B. Read/write functions work one sector at a time; for unindexed files, the last eight bytes will always be 00 00 00 00 00 00 00 00.
 
+Note that there is an additional restriction on executable files: they may not be longer than 16 KB. This is to ensure that they can be loaded into a segment properly.
+
 ## Writing Code for WhirliOS
 
 WhirliOS does not support any of the standard C libraries (stdio, stdlib, etc.), instead providing its own. These are named by letters of the alphabet with "lib" after them, and each has a header file. The exception is lib.asm, which provides very low-level support and is compiled as a raw binary file; use of lib.asm directly is discouraged, as you can use the other libraries instead to access the corresponding functionality at a higher level. These include:

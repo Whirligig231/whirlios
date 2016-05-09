@@ -51,6 +51,42 @@ void readSector(char *buffer, int sector) {
   interrupt(0x13, 0x0201, buffer, ((div(sector, 36) << 8) | mod(sector, 18)) + 1, (div(sector, 18) & 1) << 8);
 }
 
+int fileGetSector(char *buffer, int file, int *sector) {
+  /* TODO: Make this not suck as much (currently it does two reads sometimes, which could theoretically be helped) */
+  int indexFlags;
+  char buf[512];
+  int i;
+  int index;
+  readSector(buf, file);
+  indexFlags = ((buf[0] & 0x80) >> 6) + ((buf[1] & 0x80) >> 7);
+  if (indexFlags == 0) {
+    /* Unindexed file */
+    if (*sector)
+      return 1; /* EOF */
+    for (i = 0; i < 504; i++) {
+      buffer[i] = buf[i+8];
+    }
+    for (; i < 512; i++)
+      buffer[i] = 0;
+  } else if (indexFlags == 1) {
+    /* Singly indexed file */
+    if (*sector < 0 || *sector >= 336)
+      return 1; /* EOF */
+    if ((*sector) & 1) {
+      index = ((buf[9+3*(*sector >> 1)] & 0x0F) << 8) + buf[10+3*(*sector >> 1)];
+    } else {
+      index = (buf[8+3*(*sector >> 1)] << 4) + ((buf[9+3*(*sector >> 1)] & 0xF0) >> 4);
+    }
+    if (!index)
+      return 1; /* EOF */
+    readSector(buffer, index);
+  } else {
+    return 2; /* Unsupported indexing mode */
+  }
+  *sector++;
+  return 0;
+}
+
 int handleInterrupt21() {
   /* Placeholder */
 }
@@ -61,7 +97,10 @@ int handleTimerInterrupt() {
 
 void runkernel() {
   char buf[512];
-  readSector(buf, 16);
+  int sec;
+  int n;
+  sec = 0;
+  n = fileGetSector(buf, 16, &sec);
   printString(buf);
   while (1) continue;
 }
