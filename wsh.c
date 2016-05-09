@@ -1,4 +1,6 @@
+#include "lib/ilib.h"
+
 int main() {
-  interrupt(0x21, 0x4953, "I am a shell.", 0, 0);
+  iwrite("I am a shell.");
   while (1) continue;
 }
