@@ -1,4 +1,5 @@
 *.o
 *.e
 *.img
+diskutility
 bochsout.txt

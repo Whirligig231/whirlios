@@ -100,7 +100,7 @@ void runkernel() {
   int sec;
   int n;
   sec = 0;
-  n = fileGetSector(buf, 16, &sec);
+  n = fileGetSector(buf, 17, &sec);
   printString(buf);
   while (1) continue;
 }

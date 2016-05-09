@@ -2,6 +2,12 @@
 
 all: whirlios.img
 
+diskutility.o: diskutility.c
+	gcc -std=c99 -c -g -o diskutility.o diskutility.c
+	
+diskutility: diskutility.o
+	gcc -std=c99 -g -o diskutility diskutility.o
+
 kernel.o: kernel.c
 	bcc -ansi -c -o kernel.o kernel.c
 
@@ -14,12 +20,11 @@ kernel.e: kernel.o kernel_lib.o
 bootload.e: bootload.asm
 	nasm -o bootload.e bootload.asm
 	
-whirlios.img: bootload.e kernel.e test1 test2
+whirlios.img: diskutility bootload.e kernel.e test.txt
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2
-	dd if=test1 of=whirlios.img bs=512 conv=notrunc seek=16
-	dd if=test2 of=whirlios.img bs=512 conv=notrunc seek=17
+	./diskutility
 	
 test: whirlios.img
 	bochs -f ubuntu.bxrc
