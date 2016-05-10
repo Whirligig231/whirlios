@@ -44,7 +44,7 @@ test_ubuntu: whirlios.img
 test_win32: whirlios.img
 	bochs -f win32.bxrc
 	
-clean: whirlios.img
+clean:
 	rm -f *.o
 	rm -f *.e
 	rm -f *.img
