@@ -38,5 +38,13 @@ whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2
 	./diskutility
 	
-test: whirlios.img
+test_ubuntu: whirlios.img
 	bochs -f ubuntu.bxrc
+	
+test_win32: whirlios.img
+	bochs -f win32.bxrc
+	
+clean: whirlios.img
+	rm -f *.o
+	rm -f *.e
+	rm -f *.img
