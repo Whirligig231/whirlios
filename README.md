@@ -77,3 +77,8 @@ WhirliOS does not support any of the standard C libraries (stdio, stdlib, etc.),
 * mlib.h: mathematical functions
 * slib.h: string parsing
 * tlib.h: timekeeping functions
+
+## Credits
+
+Most of this code was created by Whirligig231, with portions by synthetixa.
+
