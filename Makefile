@@ -20,8 +20,8 @@ kernel.e: kernel.o kernel_lib.o
 bootload.e: bootload.asm
 	nasm -o bootload.e bootload.asm
 	
-lib/lib.o: lib/lib.asm
-	as86 -o lib/lib.o lib/lib.asm
+lib/syscall.o: lib/syscall.asm
+	as86 -o lib/syscall.o lib/syscall.asm
 
 lib/ilib.o: lib/ilib.c
 	bcc -ansi -c -o lib/ilib.o lib/ilib.c
@@ -29,8 +29,8 @@ lib/ilib.o: lib/ilib.c
 wsh.o: wsh.c lib/ilib.h
 	bcc -ansi -c -o wsh.o wsh.c
 	
-wsh.e: wsh.o lib/lib.o lib/ilib.o
-	ld86 -o wsh.e -d wsh.o lib/lib.o lib/ilib.o
+wsh.e: wsh.o lib/syscall.o lib/ilib.o
+	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o
 	
 whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
