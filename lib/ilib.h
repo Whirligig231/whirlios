@@ -32,6 +32,15 @@ ARGUMENTS
 void ireads(char *str);
 
 /*
+  This is exactly the same as ireads, with the exception that characters the user types are printed as asterisks (****). This is recommended for use for passwords and the like.
+
+ARGUMENTS
+  str: a buffer in which to put the line
+*/
+
+void ireadps(char *str);
+
+/*
   Blocks and waits for a single character of input. Returns 0 if the user presses a non-ASCII key such as the arrow keys or ESC.
 
 RETURNS
