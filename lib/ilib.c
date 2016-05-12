@@ -10,6 +10,10 @@ void ireads(char *str) {
   syscall(0x4973, str, 0, 0);
 }
 
+void ireadps(char *str) {
+  syscall(0x4973, str, 1, 0);
+}
+
 char ireadc() {
   char ch;
   syscall(0x4963, &ch, 0, 0);
