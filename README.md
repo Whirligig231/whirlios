@@ -67,7 +67,7 @@ Note that there is an additional restriction on executable files: they may not b
 
 ## Writing Code for WhirliOS
 
-WhirliOS does not support any of the standard C libraries (stdio, stdlib, etc.), instead providing its own. These are named by letters of the alphabet with "lib" after them, and each has a header file. The exception is lib.asm, which provides very low-level support and is compiled as a raw binary file; use of lib.asm directly is discouraged, as you can use the other libraries instead to access the corresponding functionality at a higher level. These include:
+WhirliOS does not support any of the standard C libraries (stdio, stdlib, etc.), instead providing its own. These are named by letters of the alphabet with "lib" after them, and each has a header file. The exception is syscall.asm, which provides a function for making system calls via interrupts and is compiled as a raw binary file; use of syscall.asm directly is discouraged, as you can use the other libraries instead to access the corresponding functionality at a higher level. These include:
 
 * alib.h: audio support, for beeping the internal speaker
 * dlib.h: dynamic memory allocation (TODO)
@@ -80,5 +80,5 @@ WhirliOS does not support any of the standard C libraries (stdio, stdlib, etc.),
 
 ## Credits
 
-Most of this code was created by Whirligig231, with portions by synthetixa.
+Most of this code was created by Whirligig231, with portions by synthetixa and amd7.
 
