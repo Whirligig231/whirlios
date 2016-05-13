@@ -48,3 +48,6 @@ clean:
 	rm -f *.o
 	rm -f *.e
 	rm -f *.img
+	rm -f lib/*.img
+	rm -f lib/*.e
+	rm -f lib/*.o
