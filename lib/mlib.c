@@ -1,3 +1,5 @@
+#include "mlib.h"
+
 int mdiv(int a, int b) {
   int quot;
   int q;
@@ -57,4 +59,27 @@ int mmod(int a, int b) {
     a += c;
   }
   return a;
+}
+
+lint maddl(lint a, lint b) {
+  unsigned int a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4;
+  lint c;
+  a1 = a.high >> 8;
+  a2 = a.high & 255;
+  a3 = a.low >> 8;
+  a4 = a.low & 255;
+  b1 = a.high >> 8;
+  b2 = a.high & 255;
+  b3 = a.low >> 8;
+  b4 = a.low & 255;
+  
+  c1 = a1 + b1;
+  c2 = a2 + b2;
+  c3 = a3 + b3;
+  c4 = a4 + b4;
+  
+  c.low = (c3 << 8) + c4;
+  c.high = (c3 >> 8) + c2 + (c1 << 8);
+  
+  return c;
 }

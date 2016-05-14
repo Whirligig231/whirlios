@@ -26,7 +26,7 @@ lib/syscall.o: lib/syscall.asm
 lib/ilib.o: lib/ilib.c
 	bcc -ansi -c -o lib/ilib.o lib/ilib.c
 	
-lib/mlib.o: lib/mlib.c
+lib/mlib.o: lib/mlib.c lib/mlib.h
 	bcc -ansi -c -o lib/mlib.o lib/mlib.c
 	
 wsh.o: wsh.c lib/ilib.h
