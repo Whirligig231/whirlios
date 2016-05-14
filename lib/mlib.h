@@ -5,6 +5,9 @@
 
 ARGUMENTS
   a, b: integers to divide
+
+RETURNS
+  the quotient of the two integers
 */
 
 int mdiv(int a, int b);
@@ -16,6 +19,9 @@ int mdiv(int a, int b);
 
 ARGUMENTS
   a, b: integers to compute a%b on
+  
+RETURNS
+  the remainder of the two integers
 */
 
 int mmod(int a, int b);
@@ -38,6 +44,9 @@ typedef struct lint {
 
 ARGUMENTS
   a, b: long integers to add
+
+RETURNS
+  the sum of the two lints
 */
 
 lint maddl(lint a, lint b);
