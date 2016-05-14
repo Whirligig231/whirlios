@@ -1,25 +1,19 @@
-#include "slib.h" 
- 
+#include "mlib.h"
+
 int scompare(char str1[], char str2[]) {
-	int length1 = slength(str1);
-	int length2 = slength(str2);
 	int pos = 0;
-	int ret = 0;
 
-	if(length1 == length2){
-
-		while(pos <= length1){
-			if(str1[pos] == str2[pos]){
-				ret = 0;
+  while(str1[pos] || str2[pos]){
+			if(str1[pos] < str2[pos]){
+				return -1;
+			}
+      else if(str1[pos] > str2[pos]){
+				return 1;
 			}
 			pos++;
-		}
-	}
-	else if(length1 != length2){
-		ret = 1;
 	}
 
-	return(ret);
+	return 0;
 }
 
 int slength(char str[]) {
@@ -35,6 +29,7 @@ void sformati(char *buffer, int n) {
 	if (n == 0) {
 		buffer[0] = '0';
 		buffer[1] = '\0';
+    return;
 	}
 
 	if (n < 0){

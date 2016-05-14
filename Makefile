@@ -29,14 +29,14 @@ lib/ilib.o: lib/ilib.c
 lib/mlib.o: lib/mlib.c lib/mlib.h
 	bcc -ansi -c -o lib/mlib.o lib/mlib.c
 
-lib/slib.o: lib/slib.c lib/slib.h
+lib/slib.o: lib/slib.c lib/mlib.h
 	bcc -ansi -c -o lib/slib.o lib/slib.c
 	
-wsh.o: wsh.c
+wsh.o: wsh.c lib/ilib.h lib/slib.c lib/mlib.h
 	bcc -ansi -c -o wsh.o wsh.c
 	
 wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
-	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o
+	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
 	
 whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
@@ -51,6 +51,6 @@ test_win32: whirlios.img
 	bochs -f win32.bxrc
 	
 clean:
-	rm -f *.o
-	rm -f *.e
-	rm -f *.img
+	find . -name "*.o" -type f -delete
+	find . -name "*.e" -type f -delete
+	find . -name "*.img" -type f -delete
