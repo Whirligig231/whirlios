@@ -28,11 +28,14 @@ lib/ilib.o: lib/ilib.c
 	
 lib/mlib.o: lib/mlib.c lib/mlib.h
 	bcc -ansi -c -o lib/mlib.o lib/mlib.c
+
+lib/slib.o: lib/slib.c lib/slib.h
+	bcc -ansi -c -o lib/slib.o lib/slib.c
 	
-wsh.o: wsh.c lib/ilib.h
+wsh.o: wsh.c
 	bcc -ansi -c -o wsh.o wsh.c
 	
-wsh.e: wsh.o lib/syscall.o lib/ilib.o
+wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
 	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o
 	
 whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
