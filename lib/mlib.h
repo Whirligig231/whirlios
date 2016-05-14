@@ -19,3 +19,25 @@ ARGUMENTS
 */
 
 int mmod(int a, int b);
+
+/*
+  This struct represents a long (32-bit) integer. Since ld86 does not support 32-bit instructions, this functionality is provided instead.
+  
+FIELDS
+  low: the low 16 bits
+  high: the high 16 bits
+*/
+
+typedef struct lint {
+  unsigned int low;
+  unsigned int high;
+} lint;
+
+/*
+  Computes a+b, where a, b are lints.
+
+ARGUMENTS
+  a, b: long integers to add
+*/
+
+lint maddl(lint a, lint b);

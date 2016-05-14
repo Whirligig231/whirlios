@@ -1,5 +1,3 @@
- 
-
 ## By Whirligig231
 
 all: whirlios.img
@@ -28,17 +26,17 @@ lib/syscall.o: lib/syscall.asm
 lib/ilib.o: lib/ilib.c
 	bcc -ansi -c -o lib/ilib.o lib/ilib.c
 	
-lib/mlib.o: lib/mlib.c
+lib/mlib.o: lib/mlib.c lib/mlib.h
 	bcc -ansi -c -o lib/mlib.o lib/mlib.c
 
-lib/slib.o: lib/slib.c
+lib/slib.o: lib/slib.c lib/slib.h
 	bcc -ansi -c -o lib/slib.o lib/slib.c
 	
-wsh.o: wsh.c lib/ilib.h lib/mlib.h lib/slib.h
+wsh.o: wsh.c
 	bcc -ansi -c -o wsh.o wsh.c
 	
 wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
-	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
+	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o
 	
 whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
