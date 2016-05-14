@@ -59,7 +59,7 @@ int readKey() {
   return interrupt(0x16, 0, 0, 0, 0);
 }
 
-void readString(char *str) {
+void readString(char *str, int protect) {
   /* TODO: Remove buffer overflow */
   int i, max, j;
   int key;
@@ -83,7 +83,7 @@ void readString(char *str) {
       printChar(8);
       for (j = i; j < max - 1; j++) {
         str[j] = str[j+1];
-        printChar(str[j]);
+        printChar(protect ? '*' : str[j]);
       }
       printChar(' ');
       for (j = max; j > i; j--) {
@@ -97,7 +97,7 @@ void readString(char *str) {
       if (key >> 8 == 0x4D) {
         /* Right arrow */
         if (i < max) {
-          printChar(str[i]);
+          printChar(protect ? '*' : str[i]);
           i++;
         }
       } else if (key >> 8 == 0x4B) {
@@ -111,7 +111,7 @@ void readString(char *str) {
     }
     
     str[i] = ch;
-    printChar(ch);
+    printChar(protect ? '*' : ch);
     i++;
     if (i > max)
       max = i;
@@ -228,7 +228,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     printChar((char) bx);
   } else if (ax == 0x4973) {
     /* Read string */
-    readString((char*) bx);
+    readString((char*) bx, cx);
   } else if (ax == 0x4963) {
     /* Read char */
     *((char*) bx) = readChar();

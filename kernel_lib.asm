@@ -33,22 +33,32 @@ _putInMemory:
 ;int interrupt (int number, int AX, int BX, int CX, int DX)
 _interrupt:
 	push bp
-	mov bp,sp
-	mov ax,[bp+4]	;get the interrupt number in AL
-	push ds		;use self-modifying code to call the right interrupt
-	mov bx,cs
-	mov ds,bx
-	mov si,#intr
-	mov [si+1],al	;change the 00 below to the contents of AL
-	pop ds
-	mov ax,[bp+6]	;get the other parameters AX, BX, CX, and DX
-	mov bx,[bp+8]
-	mov cx,[bp+10]
-	mov dx,[bp+12]
+	mov bp, sp
+	push gs
+	push si ; Callee-save
+	push di ; Callee-save
 
-intr:	int #0x00	;call the interrupt (00 will be changed above)
+	; Set GS:SI to the address of the interrupt's IVT entry
+	xor ax, ax
+	mov gs, ax       ; GS = 0
+	mov si, [bp + 4] ; SI = number
+	shl si, #2       ; SI *= 4
 
-	;mov ah,#0	;we only want AL returned
+	; Load registers from arguments
+	mov ax, [bp + 6]
+	mov bx, [bp + 8]
+	mov cx, [bp + 10]
+	mov dx, [bp + 12]
+
+	; Save flags (for iret), disable interrupts, and do a far call
+	pushf
+	cli
+	gseg
+	call far [si] ; [gs:si]
+
+	pop di
+	pop si
+	pop gs
 	pop bp
 	ret
 
