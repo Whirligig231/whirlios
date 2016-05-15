@@ -1,6 +1,6 @@
 #include "mlib.h"
 
-int scompare(char str1[], char str2[]) {
+int scompare(char *str1, char *str2) {
   int pos = 0;
 
   while (str1[pos] || str2[pos]) {
@@ -16,7 +16,7 @@ int scompare(char str1[], char str2[]) {
   return 0;
 }
 
-int slength(char str[]) {
+int slength(char *str) {
   char *s;
   for (s = str; *s; s++);
   return s - str;

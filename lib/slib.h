@@ -9,7 +9,7 @@ RETURNS
   0, 1, or -1; see above
 */
 
-int scompare(char str1[], char str2[]);
+int scompare(char *str1, char *str2);
 
 /*
   Finds the length of a string.
@@ -21,7 +21,7 @@ RETURNS
   the length of the string
 */
 
-int slength(char str[]);
+int slength(char *str);
 
 /*
   Copies the first len characters of src to dest. Useful for extracting substrings.

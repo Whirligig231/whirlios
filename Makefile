@@ -32,7 +32,7 @@ lib/mlib.o: lib/mlib.c lib/mlib.h
 lib/slib.o: lib/slib.c lib/mlib.h
 	bcc -ansi -c -o lib/slib.o lib/slib.c
 	
-wsh.o: wsh.c lib/ilib.h lib/slib.c lib/mlib.h
+wsh.o: wsh.c lib/ilib.h lib/slib.h
 	bcc -ansi -c -o wsh.o wsh.c
 	
 wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o

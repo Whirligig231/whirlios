@@ -1,5 +1,13 @@
 #include "mlib.h"
 
+/* This is needed by BCC for structs ... for some inane reason */
+/* TODO: put this somewhere else so that I don't have to copy it to every file with structs */
+void memcpy(char *dest, char *src, int n) {
+  int i;
+  for (i = 0; i < n; i++)
+    dest[i] = src[i];
+}
+
 int mdiv(int a, int b) {
   int quot;
   int q;
