@@ -22,6 +22,18 @@ int slength(char str[]) {
   return s - str;
 }
 
+void scopy(char *dest, char *src, int len) {
+  int i;
+  for (i = 0; i < len && src[i]; i++) {
+    dest[i] = src[i];
+  }
+  dest[i] = '\0';
+}
+
+void sconcat(char *dest, char *src) {
+  scopy(dest + slength(dest), src, slength(src));
+}
+
 void sformati(char *buffer, int n) {
   int pos = 0;
   int n_temp;

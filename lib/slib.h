@@ -24,6 +24,27 @@ RETURNS
 int slength(char str[]);
 
 /*
+  Copies the first len characters of src to dest. Useful for extracting substrings.
+  
+  The output buffer must be long enough to hold the new string; there is no protection for this. A null terminator will be appended after the copied string.
+
+ARGUMENTS
+  dest: output buffer
+  src: input buffer
+  len: maximum length to copy
+*/
+void scopy(char *dest, char *src, int len);
+
+/*
+  Concatenates two strings. This assumes the dest buffer is large enough, so be careful.
+  
+ARGUMENTS
+  dest: output buffer
+  src: input buffer
+*/
+void sconcat(char *dest, char *src);
+
+/*
   Formats an integer to a string. Note that this assumes the buffer is large enough (7 bytes).
 
 ARGUMENTS
