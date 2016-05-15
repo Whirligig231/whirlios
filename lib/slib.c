@@ -34,6 +34,30 @@ void sconcat(char *dest, char *src) {
   scopy(dest + slength(dest), src, slength(src));
 }
 
+int sfindc(char *str, char ch) {
+  int i;
+  for (i = 0; str[i]; i++)
+    if (str[i] == ch)
+      return i;
+    
+  return -1;
+}
+
+int sfinds(char *str1, char *str2) {
+  /* TODO: Implement KMP for better efficiency once there's some form of dynamic allocation */
+  int i, j;
+  int matched;
+  for (i = 0; str1[i]; i++) {
+    matched = 1;
+    for (j = 0; str1[i + j] || str2[j]; j++)
+      if (str1[i + j] != str2[i + j])
+        matched = 0;
+    if (matched)
+      return i;
+  }
+  return -1;
+}
+
 void sformati(char *buffer, int n) {
   int pos = 0;
   int n_temp;

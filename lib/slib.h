@@ -45,6 +45,30 @@ ARGUMENTS
 void sconcat(char *dest, char *src);
 
 /*
+  Finds a character in a string. Returns the offset of the first occurrence.
+  
+ARGUMENTS
+  str: the string in which to search
+  ch: the character to find
+  
+RETURNS
+  the offset of ch in str, or -1 if it was not found
+*/
+int sfindc(char *str, char ch);
+
+/*
+  Finds one string in another. Returns the offset of the first occurrence.
+    
+ARGUMENTS
+  str1: the string in which to search
+  str2: the string to find
+  
+RETURNS
+  the offset of str2 in str1, or -1 if it was not found
+*/
+int sfinds(char *str1, char *str2);
+
+/*
   Formats an integer to a string. Note that this assumes the buffer is large enough (7 bytes).
 
 ARGUMENTS
