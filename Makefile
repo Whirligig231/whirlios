@@ -32,11 +32,14 @@ lib/mlib.o: lib/mlib.c lib/mlib.h
 lib/slib.o: lib/slib.c lib/mlib.h
 	bcc -ansi -c -o lib/slib.o lib/slib.c
 	
+lib/flib.o: lib/flib.c lib/slib.h lib/flib.h
+	bcc -ansi -c -o lib/flib.o lib/flib.c
+	
 wsh.o: wsh.c lib/ilib.h lib/slib.h
 	bcc -ansi -c -o wsh.o wsh.c
 	
-wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
-	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
+wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
+	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 	
 whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880

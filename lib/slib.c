@@ -34,6 +34,11 @@ void sconcat(char *dest, char *src) {
   scopy(dest + slength(dest), src, slength(src));
 }
 
+void strunc(char *str, int len) {
+  if (slength(str) > len)
+    str[len] = '\0';
+}
+
 int sfindc(char *str, char ch) {
   int i;
   for (i = 0; str[i]; i++)
@@ -56,6 +61,16 @@ int sfinds(char *str1, char *str2) {
       return i;
   }
   return -1;
+}
+
+int sfindlc(char *str, char ch) {
+  int i;
+  int ret = -1;
+  for (i = 0; str[i]; i++)
+    if (str[i] == ch)
+      ret = i;
+    
+  return ret;
 }
 
 void sformati(char *buffer, int n) {

@@ -45,6 +45,15 @@ ARGUMENTS
 void sconcat(char *dest, char *src);
 
 /*
+  Truncates a string, removing all but the first len characters. This is mutative.
+  
+ARGUMENTS
+  str: the buffer
+  len: the new length of the string
+*/
+void strunc(char *str, int len);
+
+/*
   Finds a character in a string. Returns the offset of the first occurrence.
   
 ARGUMENTS
@@ -67,6 +76,18 @@ RETURNS
   the offset of str2 in str1, or -1 if it was not found
 */
 int sfinds(char *str1, char *str2);
+
+/*
+  Finds a character in a string. Returns the offset of the last occurrence.
+  
+ARGUMENTS
+  str: the string in which to search
+  ch: the character to find
+  
+RETURNS
+  the offset of the last occurrence of ch in str, or -1 if it was not found
+*/
+int sfindlc(char *str, char ch);
 
 /*
   Formats an integer to a string. Note that this assumes the buffer is large enough (7 bytes).

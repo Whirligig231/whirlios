@@ -1,5 +1,7 @@
 void runkernel();
 
+char wd[512];
+
 int main() {
 	runkernel();
   while (1) continue;
@@ -127,7 +129,7 @@ void readSector(char *buffer, int sector) {
   interrupt(0x13, 0x0201, buffer, ((div(sector, 36) << 8) | mod(sector, 18)) + 1, (div(sector, 18) & 1) << 8);
 }
 
-int fileGetSector(char *buffer, int file, int *sector) {
+int fileGetSector(char *buffer, int file, int sector) {
   /* TODO: Make this not suck as much (currently it does two reads sometimes, which could theoretically be helped) */
   int indexFlags;
   char buf[512];
@@ -137,7 +139,7 @@ int fileGetSector(char *buffer, int file, int *sector) {
   indexFlags = ((buf[0] & 0x80) >> 6) + ((buf[1] & 0x80) >> 7);
   if (indexFlags == 0) {
     /* Unindexed file */
-    if (*sector)
+    if (sector)
       return 1; /* EOF */
     for (i = 0; i < 504; i++) {
       buffer[i] = buf[i+8];
@@ -146,12 +148,12 @@ int fileGetSector(char *buffer, int file, int *sector) {
       buffer[i] = 0;
   } else if (indexFlags == 1) {
     /* Singly indexed file */
-    if (*sector < 0 || *sector >= 336)
+    if (sector < 0 || sector >= 336)
       return 1; /* EOF */
-    if ((*sector) & 1) {
-      index = ((buf[9+3*(*sector >> 1)] & 0x0F) << 8) + buf[10+3*(*sector >> 1)];
+    if ((sector) & 1) {
+      index = ((buf[9+3*(sector >> 1)] & 0x0F) << 8) + buf[10+3*(sector >> 1)];
     } else {
-      index = (buf[8+3*(*sector >> 1)] << 4) + ((buf[9+3*(*sector >> 1)] & 0xF0) >> 4);
+      index = (buf[8+3*(sector >> 1)] << 4) + ((buf[9+3*(sector >> 1)] & 0xF0) >> 4);
     }
     if (!index)
       return 1; /* EOF */
@@ -159,7 +161,6 @@ int fileGetSector(char *buffer, int file, int *sector) {
   } else {
     return 2; /* Unsupported indexing mode */
   }
-  (*sector)++;
   return 0;
 }
 
@@ -176,14 +177,12 @@ int findInDirectory(int directory, char *name) {
   int i;
   int offset;
   int index;
-  int sector;
   int found;
-  sector = 0;
   for (i = 0; i < 8 && name[i]; i++)
     name2[i] = name[i];
   for (; i < 8; i++)
     name2[i] = '\0';
-  fileGetSector(buf, directory, &sector);
+  fileGetSector(buf, directory, 0);
   for (offset = 0; offset < 512; offset += 2) {
     index = (buf[offset+1] << 8) + buf[offset];
     if (!index)
@@ -204,19 +203,33 @@ int runProgram(int file) {
   int sector;
   char buffer[512];
   int i;
-  
-  sector = 0;
-  while (sector < 32) {
+
+  for (sector = 0; sector < 32; sector++) {
     /* TODO: error checking on this call */
-    if (fileGetSector(buffer, file, &sector))
+    if (fileGetSector(buffer, file, sector))
       break;
 
     for (i = 0; i < 512; i++) {
-      putInMemory(0x2000, (sector - 1)*512 + i, buffer[i]);
+      putInMemory(0x2000, sector*512 + i, buffer[i]);
     }
+
   }
   
   launchProgram(0x2000);
+}
+
+void setWD(char *buffer) {
+  int i;
+  for (i = 0; buffer[i] && i < 511; i++)
+    wd[i] = buffer[i];
+  wd[i] = '\0';
+}
+
+void getWD(char *buffer) {
+  int i;
+  for (i = 0; wd[i] && i < 511; i++)
+    buffer[i] = wd[i];
+  buffer[i] = '\0';
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
@@ -235,6 +248,21 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x496B) {
     /* Read key */
     *((int*) bx) = readKey();
+  } else if (ax == 0x4653) {
+    /* Read file sector */
+    *((int*) dx) = fileGetSector((char*) bx, cx, *((int*) dx));
+  } else if (ax == 0x4646) {
+    /* Find in directory */
+    *((int*) dx) = findInDirectory(bx, (char*) cx);
+  } else if (ax == 0x4652) {
+    /* Get root directory */
+    *((int*) bx) = getRoot();
+  } else if (ax == 0x4657) {
+    /* Set working directory */
+    setWD((char*) bx);
+  } else if (ax == 0x4677) {
+    /* Get working directory */
+    getWD((char*) bx);
   } else {
     /* Incorrect interrupt -- for now, do nothing */
     return;
@@ -260,5 +288,7 @@ void runkernel() {
   }
   
   makeInterrupt21();
+  wd[0] = '/';
+  wd[1] = '\0';
   runProgram(sec);
 }
