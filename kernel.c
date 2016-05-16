@@ -164,6 +164,16 @@ int fileGetSector(char *buffer, int file, int sector) {
   return 0;
 }
 
+void getFname(char *buffer, int file) {
+  char buf[512];
+  int i;
+  readSector(buf, file);
+  for (i = 0; i < 8 && (buf[i] & 0x7F); i++) {
+    buffer[i] = buf[i] & 0x7F;
+  }
+  buffer[i] = '\0';
+}
+
 int getRoot() {
   return 16;
 }
@@ -263,6 +273,9 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x4677) {
     /* Get working directory */
     getWD((char*) bx);
+  } else if (ax == 0x466E) {
+    /* Get file name */
+    getFname((char*) bx, cx);
   } else {
     /* Incorrect interrupt -- for now, do nothing */
     return;
