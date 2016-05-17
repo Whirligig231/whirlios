@@ -174,6 +174,13 @@ void getFname(char *buffer, int file) {
   buffer[i] = '\0';
 }
 
+int getFtype(int file) {
+  char buf[512];
+  int i;
+  readSector(buf, file);
+  return ((buf[2] & 0x80) >> 6) | ((buf[3] & 0x80) >> 7);
+}
+
 int getRoot() {
   return 16;
 }
@@ -276,6 +283,9 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x466E) {
     /* Get file name */
     getFname((char*) bx, cx);
+  } else if (ax == 0x4674) {
+    /* Get file type */
+    *((int*)cx) = getFtype(bx);
   } else {
     /* Incorrect interrupt -- for now, do nothing */
     return;

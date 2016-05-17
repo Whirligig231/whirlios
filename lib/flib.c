@@ -97,5 +97,11 @@ file fget(char *path) {
 }
 
 void fgetname(char *buffer, file f) {
-  syscall(0x466E, buffer, f);
+  syscall(0x466E, buffer, f, 0);
+}
+
+int fgettype(file f) {
+  int ret;
+  syscall(0x4674, f, &ret, 0);
+  return ret;
 }
