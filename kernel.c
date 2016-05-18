@@ -213,7 +213,7 @@ int findInDirectory(int directory, char *name) {
     if (found)
       return index;
   }
-  return -1;
+  return 0;
 }
 
 int runProgram(int file) {
@@ -237,15 +237,29 @@ int runProgram(int file) {
 
 void setWD(char *buffer) {
   int i;
-  for (i = 0; buffer[i] && i < 511; i++)
-    wd[i] = buffer[i];
+  char c;
+  for (i = 0; buffer[i] && i < 511; i++) {
+    c = buffer[i];
+    setKernelDataSegment();
+    wd[i] = c;
+    restoreDataSegment();
+  }
+  setKernelDataSegment();
   wd[i] = '\0';
+  restoreDataSegment();
 }
 
 void getWD(char *buffer) {
   int i;
-  for (i = 0; wd[i] && i < 511; i++)
-    buffer[i] = wd[i];
+  char c;
+  setKernelDataSegment();
+  for (i = 0; wd[i] && i < 511; i++) {
+    c = wd[i];
+    restoreDataSegment();
+    buffer[i] = c;
+    setKernelDataSegment();
+  }
+  restoreDataSegment();
   buffer[i] = '\0';
 }
 
@@ -300,12 +314,12 @@ void runkernel() {
   int sec;
   sec = getRoot();
   sec = findInDirectory(sec, "bin");
-  if (sec == -1) {
+  if (!sec) {
     printString("Error: no bin directory!");
     return;
   }
   sec = findInDirectory(sec, "wsh");
-  if (sec == -1) {
+  if (!sec) {
     printString("Error: no shell executable!");
     return;
   }
