@@ -102,3 +102,15 @@ void sformati(char *buffer, int n) {
     n = mdiv(n, 10);
   }
 }
+
+void sformath(char *buffer, char *hexes, int len) {
+  int i;
+  char *digits = "0123456789ABCDEF";
+  for (i = 0; i < len; i++) {
+    if (i > 0)
+      buffer[3*i-1] = ' ';
+    buffer[3*i] = digits[hexes[i] >> 4];
+    buffer[3*i+1] = digits[hexes[i] & 15];
+  }
+  buffer[3*i-1] = '\0';
+}

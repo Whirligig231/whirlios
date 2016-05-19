@@ -98,3 +98,13 @@ ARGUMENTS
 */
 
 void sformati(char *buffer, int n);
+
+/*
+  Formats a buffer to a string by writing hexadecimal. Note that this assumes the output buffer is large enough.
+
+ARGUMENTS
+  buffer: string to output to
+  hexes: input buffer
+  len: number of bytes
+*/
+void sformath(char *buffer, char *hexes, int len);

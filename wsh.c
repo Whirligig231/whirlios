@@ -4,6 +4,7 @@
 
 void ls();
 void cd(char *dir);
+void cat(char *fname);
 
 int main() {
   char buffer[80];
@@ -21,13 +22,17 @@ int main() {
       len = slength(buffer);
     scopy(verb, buffer, len);
     if (!scompare(verb, "help")) {
-      iwrites("\nhelp: display this message\nls: list files\n\n");
+      iwrites("\ncat: print file contents\ncd: change directories\nhelp: display this message\nls: list files\n\n");
     }
     else if (!scompare(verb, "ls")) {
       ls();
     }
     else if (!scompare(verb, "cd")) {
       cd(buffer + len + 1);
+    }
+    else if (!scompare(verb, "cat")) {
+      /* Mrew? */
+      cat(buffer + len + 1);
     }
     else {
       iwrites("Error: unrecognized command \"");
@@ -82,4 +87,52 @@ void cd(char *dir) {
     return;
   }
   fsetwd(dir2);
+}
+
+void cat(char *fname) {
+  file f;
+  int type;
+  char buf[512];
+  char buffer[1536];
+  int i;
+  int errcode;
+  f = fget(fname);
+  if (!f) {
+    iwrites("Error: file does not exist\n");
+    return;
+  }
+  type = fgettype(f);
+  if (type == 3) {
+    iwrites("Error: this is a directory\n");
+    return;
+  }
+  else if (type == 0) {
+    for (i = 0; 1; i++) {
+      errcode = freads(buffer, f, i);
+      if (errcode == 2) {
+        iwrites("Error: unable to read file\n");
+        return;
+      }
+      else if (errcode == 1)
+        break;
+      buffer[512] = '\0';
+      iwrites(buffer);
+    }
+  }
+  else {
+    for (i = 0; 1; i++) {
+      errcode = freads(buf, f, i);
+      if (errcode == 2) {
+        iwrites("Error: unable to read file\n");
+        return;
+      }
+      else if (errcode == 1)
+        break;
+      sformath(buffer, buf, 512);
+      if (i > 0)
+        iwritec(' ');
+      iwrites(buffer);
+    }
+  }
+  iwrites("\n");
 }
