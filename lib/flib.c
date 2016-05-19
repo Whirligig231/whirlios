@@ -90,13 +90,14 @@ void fexpand(char *dest, char *src) {
       /* Do nothing */
     }
     else if (!scompare(buffer, "..")) {
+      strunc(dest, slength(dest) - 1);
       sl = sfindlc(dest, '/');
       if (sl < 0) {
         dest[0] = '/';
         dest[1] = '\0';
       }
       else {
-        strunc(dest, sl);
+        strunc(dest, sl + 1);
       }
     }
     else {
