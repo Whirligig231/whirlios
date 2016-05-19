@@ -81,9 +81,15 @@ void ls() {
 
 void cd(char *dir) {
   char dir2[512];
+  int f;
   fexpand(dir2, dir);
-  if (!fget(dir2)) {
+  f = fget(dir2);
+  if (!f) {
     iwrites("Error: directory does not exist\n");
+    return;
+  }
+  if (fgettype(f) != 3) {
+    iwrites("Error: file is not a directory\n");
     return;
   }
   fsetwd(dir2);
@@ -103,7 +109,7 @@ void cat(char *fname) {
   }
   type = fgettype(f);
   if (type == 3) {
-    iwrites("Error: this is a directory\n");
+    iwrites("Error: file is a directory\n");
     return;
   }
   else if (type == 0) {
