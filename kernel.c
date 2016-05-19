@@ -1,6 +1,7 @@
 void runkernel();
 
 char wd[512];
+char col;
 
 int main() {
 	runkernel();
@@ -40,8 +41,18 @@ int mod(int a, int b) {
   return a;
 }
 
+void setColor(char co) {
+  setKernelDataSegment();
+  col = co;
+  restoreDataSegment();
+}
+
 void printChar(char c) {
-  interrupt(0x10, 0x0E00 + c, 0, 0, 0);
+  setKernelDataSegment();
+  if (c != '\r' && c != '\n' && c != 8)
+    interrupt(0x10, 0x0900 + c, col, 1, 0); 
+  interrupt(0x10, 0x0e00 + c, 0, 0, 0);
+  restoreDataSegment();
 }
 
 void printString(char *str) {
@@ -188,7 +199,7 @@ int getRoot() {
 int findInDirectory(int directory, char *name) {
   /* TODO: Extend this to directories with index mode 1 */
   /* TODO: Actually check that it's a directory */
-  char name2[8];
+  char name2[9];
   char buf[512];
   char first[512];
   int i;
@@ -197,7 +208,7 @@ int findInDirectory(int directory, char *name) {
   int found;
   for (i = 0; i < 8 && name[i]; i++)
     name2[i] = name[i];
-  for (; i < 8; i++)
+  for (; i < 9; i++)
     name2[i] = '\0';
   fileGetSector(buf, directory, 0);
   for (offset = 0; offset < 512; offset += 2) {
@@ -270,6 +281,9 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x4943) {
     /* Print char */
     printChar((char) bx);
+  } else if (ax == 0x494B) {
+    /* Print char */
+    setColor((char) bx);
   } else if (ax == 0x4973) {
     /* Read string */
     readString((char*) bx, cx);
@@ -327,5 +341,6 @@ void runkernel() {
   makeInterrupt21();
   wd[0] = '/';
   wd[1] = '\0';
+  col = 7;
   runProgram(sec);
 }

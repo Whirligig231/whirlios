@@ -6,6 +6,10 @@ void iwritec(char ch) {
   syscall(0x4943, ch, 0, 0);
 }
 
+void isetcolor(char col) {
+  syscall(0x494B, col, 0, 0);
+}
+
 void ireads(char *str) {
   syscall(0x4973, str, 0, 0);
 }

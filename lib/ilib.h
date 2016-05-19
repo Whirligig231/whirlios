@@ -19,6 +19,15 @@ ARGUMENTS
 void iwritec(char ch);
 
 /*
+  Sets the color to use for characters. This uses the standard 16-color palette. You can use bits 4-6 (in order of least to most significant) to specify a background color.
+  
+ARGUMENTS
+  col: the color to set
+*/
+
+void isetcolor(char col);
+
+/*
   Reads in a string from user input, prompting for a line of input. No newline will be appended, but a newline will be printed on the screen. The string will be given a null terminator.
   
   Backspace, left, and right are supported, but no other key is currently supported.

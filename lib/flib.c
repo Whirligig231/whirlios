@@ -51,7 +51,7 @@ int freadb(file f, int byte, filecache *c) {
 
 file ffind(file dir, char *fname) {
   file ret;
-  syscall(0x4652, dir, fname, &ret);
+  syscall(0x4646, dir, fname, &ret);
   return ret;
 }
 
@@ -75,6 +75,8 @@ void fexpand(char *dest, char *src) {
     fgetwd(dest);
   }
   else {
+    dest[0] = '/';
+    dest[1] = '\0';
     ind = 1;
   }
   
@@ -102,9 +104,9 @@ void fexpand(char *dest, char *src) {
       sconcat(dest, "/");
     }
     
-    ind = nextslash + 1;
+    ind += nextslash + 1;
   }
-  
+
   dest[slength(dest) - 1] = '\0';
 }
 
@@ -113,9 +115,11 @@ file fget(char *path) {
   char buffer[512];
   int ind = 1;
   int nextslash;
-  int len;
+  int len; 
   file f = froot();
+
   fexpand(epath, path);
+  
   len = slength(epath);
   while (ind < len) {
     nextslash = sfindc(epath + ind, '/');
@@ -127,9 +131,9 @@ file fget(char *path) {
     if (f == 0)
       return f;
     
-    ind = nextslash + 1;
+    ind += nextslash + 1;
   }
-  
+
   return f;
 }
 

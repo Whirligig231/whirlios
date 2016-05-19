@@ -3,14 +3,18 @@
 #include "lib/flib.h"
 
 void ls();
+void cd(char *dir);
 
 int main() {
   char buffer[80];
   char verb[80];
+  char wd[512];
   int len;
   iwrites("Welcome to WhirliOS.\nThis is a 16-bit OS designed by Whirligig231.\n\n");
   while (1) {
-    iwrites("/> ");
+    fgetwd(wd);
+    iwrites(wd);
+    iwrites("> ");
     ireads(buffer);
     len = sfindc(buffer, ' ');
     if (len < 0)
@@ -21,6 +25,9 @@ int main() {
     }
     else if (!scompare(verb, "ls")) {
       ls();
+    }
+    else if (!scompare(verb, "cd")) {
+      cd(buffer + len + 1);
     }
     else {
       iwrites("Error: unrecognized command \"");
@@ -36,6 +43,7 @@ void ls() {
   file dir;
   file f;
   int i;
+  int type;
   filecache c;
   
   finitcache(&c);
@@ -51,9 +59,23 @@ void ls() {
     if (!f)
       break;
     fgetname(name, f);
+    type = fgettype(f);
+    if (type == 1)
+      isetcolor(14);
+    else if (type == 2)
+      isetcolor(9);
+    else if (type == 3)
+      isetcolor(12);
     iwrites(name);
     iwrites("\n");
+    isetcolor(7);
   }
   
   iwrites("\n");
+}
+
+void cd(char *dir) {
+  char dir2[512];
+  fexpand(dir2, dir);
+  fsetwd(dir2);
 }
