@@ -58,11 +58,14 @@ int writeSector(char *buffer) {
   return index;
 }
 
-int writeFile(char *dest, char *src) {
+int writeFile(char *dest, char *src, int type) {
   char buf[512];
   for (int i = 0; i < 512; i++)
     buf[i] = 0;
   strncpy(buf, dest, 8);
+  
+  buf[2] |= 0x80 & (type << 6);
+  buf[3] |= 0x80 & (type << 7);
   
   FILE *f = fopen(src, "r");
   fseek(f, 0, SEEK_END);
@@ -157,9 +160,9 @@ int main(int argc, char *argv[]) {
   int root = writeDirectory("");
   int bin = writeDirectory("bin");
   addToDirectory(root, bin);
-  int wsh = writeFile("wsh", "wsh.e");
+  int wsh = writeFile("wsh", "wsh.e", 2);
   addToDirectory(bin, wsh);
-  int test = writeFile("test", "test.txt");
+  int test = writeFile("test", "test.txt", 0);
   addToDirectory(root, test);
   
   appendSector(writeSUT());

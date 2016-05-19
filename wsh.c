@@ -77,5 +77,9 @@ void ls() {
 void cd(char *dir) {
   char dir2[512];
   fexpand(dir2, dir);
+  if (!fget(dir2)) {
+    iwrites("Error: directory does not exist\n");
+    return;
+  }
   fsetwd(dir2);
 }

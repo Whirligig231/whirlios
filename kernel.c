@@ -256,6 +256,10 @@ void setWD(char *buffer) {
     restoreDataSegment();
   }
   setKernelDataSegment();
+  if (wd[i-1] != '/') {
+    wd[i] = '/';
+    i++;
+  }
   wd[i] = '\0';
   restoreDataSegment();
 }
