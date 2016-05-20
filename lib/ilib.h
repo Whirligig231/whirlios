@@ -66,3 +66,9 @@ RETURNS
 */
 
 int ireadk();
+
+/*
+  Terminates the program, giving control permanently over to the OS, which may then run another program.
+*/
+
+void iexit();

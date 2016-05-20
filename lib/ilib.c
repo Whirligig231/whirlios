@@ -29,3 +29,7 @@ int ireadk() {
   syscall(0x4963, &ch, 0, 0);
   return ch;
 }
+
+void iexit() {
+  /* For now, we won't worry about this implementation */
+}
