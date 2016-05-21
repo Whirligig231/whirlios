@@ -162,6 +162,8 @@ int main(int argc, char *argv[]) {
   addToDirectory(root, bin);
   int wsh = writeFile("wsh", "wsh.e", 2);
   addToDirectory(bin, wsh);
+  int hello = writeFile("hello", "hello.e", 2);
+  addToDirectory(bin, hello);
   int test = writeFile("test", "test.txt", 0);
   addToDirectory(root, test);
   

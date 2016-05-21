@@ -41,7 +41,13 @@ wsh.o: wsh.c lib/ilib.h lib/slib.h lib/flib.h
 wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 	
-whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e
+hello.o: hello.c lib/ilib.h
+	bcc -ansi -c -o hello.o hello.c
+
+hello.e: hello.o lib/syscall.o lib/ilib.o
+	ld86 -o hello.e -d hello.o lib/syscall.o lib/ilib.o
+	
+whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e hello.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2
