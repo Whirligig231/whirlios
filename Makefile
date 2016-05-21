@@ -23,7 +23,7 @@ bootload.e: bootload.asm
 lib/syscall.o: lib/syscall.asm
 	as86 -o lib/syscall.o lib/syscall.asm
 
-lib/ilib.o: lib/ilib.c
+lib/ilib.o: lib/ilib.c lib/flib.h
 	bcc -ansi -c -o lib/ilib.o lib/ilib.c
 	
 lib/mlib.o: lib/mlib.c lib/mlib.h
@@ -41,13 +41,19 @@ wsh.o: wsh.c lib/ilib.h lib/slib.h lib/flib.h
 wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 	
-hello.o: hello.c lib/ilib.h
+hello.o: hello.c lib/ilib.h lib/flib.h
 	bcc -ansi -c -o hello.o hello.c
 
 hello.e: hello.o lib/syscall.o lib/ilib.o
 	ld86 -o hello.e -d hello.o lib/syscall.o lib/ilib.o
 	
-whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e hello.e
+hello2.o: hello2.c lib/ilib.h lib/flib.h
+	bcc -ansi -c -o hello2.o hello2.c
+
+hello2.e: hello2.o lib/syscall.o lib/ilib.o
+	ld86 -o hello2.e -d hello2.o lib/syscall.o lib/ilib.o
+	
+whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e hello.e hello2.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2

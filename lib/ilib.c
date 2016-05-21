@@ -1,3 +1,5 @@
+#include "flib.h"
+
 void iwrites(char *str) {
   syscall(0x4953, str, 0, 0);
 }
@@ -30,6 +32,12 @@ int ireadk() {
   return ch;
 }
 
+int iexec(file prog) {
+  int ch;
+  syscall(0x4958, prog, &ch, 0);
+  return ch;
+}
+
 void iexit() {
-  /* For now, we won't worry about this implementation */
+  syscall(0x4978, 0, 0, 0);
 }

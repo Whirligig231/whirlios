@@ -68,6 +68,10 @@ int writeFile(char *dest, char *src, int type) {
   buf[3] |= 0x80 & (type << 7);
   
   FILE *f = fopen(src, "r");
+  if (!f) {
+    printf("Error: file %s not found!\n", src);
+    return -1;
+  }
   fseek(f, 0, SEEK_END);
   int size = ftell(f);
   if (size <= 504) {
@@ -166,6 +170,10 @@ int main(int argc, char *argv[]) {
   addToDirectory(bin, hello);
   int test = writeFile("test", "test.txt", 0);
   addToDirectory(root, test);
+  int blah = writeDirectory("blah");
+  addToDirectory(root, blah);
+  int hello2 = writeFile("hello", "hello2.e", 2);
+  addToDirectory(blah, hello2);
   
   appendSector(writeSUT());
   

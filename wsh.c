@@ -11,7 +11,7 @@ int main() {
   char verb[80];
   char wd[512];
   int len;
-  iwrites("Welcome to WhirliOS.\nThis is a 16-bit OS designed by Whirligig231.\n\n");
+  int prog;
   while (1) {
     fgetwd(wd);
     iwrites(wd);
@@ -34,10 +34,37 @@ int main() {
       /* Mrew? */
       cat(buffer + len + 1);
     }
+    else if (sfindc(verb, '/') == -1) {
+      prog = fget("/bin/");
+      if (!prog) {
+        iwrites("Error: unable to locate bin directory\n");
+        continue;
+      }
+      prog = ffind(prog, verb);
+      if (!prog) {
+        iwrites("Error: unrecognized command \"");
+        iwrites(verb);
+        iwrites("\"\n");
+        continue;
+      }
+      if (fgettype(prog) == 2)
+        iexec(prog);
+      else {
+        iwrites("Error: file is not executable\n");
+        continue;
+      }
+    }
+    else if (prog = fget(verb)) {
+      if (fgettype(prog) == 2)
+        iexec(prog);
+      else {
+        iwrites("Error: file is not executable\n");
+        continue;
+      }
+    }
     else {
-      iwrites("Error: unrecognized command \"");
-      iwrites(verb);
-      iwrites("\"\n");
+      iwrites("Error: executable not found\n");
+      continue;
     }
   }
 }

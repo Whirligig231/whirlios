@@ -1,6 +1,13 @@
 void runkernel();
 
-char wd[512];
+/* These arrays store information about each process and are indexed by segment number */
+/* Note that segment 0 is reserved for the BIOS and 1 for the kernel */
+/* As such, valid segment offsets are 0x2000 through 0xf000 */
+/* These are encoded as 0-13 in the process table */
+
+int procActive[14];
+char procWd[14][512];
+int currentProc;
 char col;
 
 int main() {
@@ -231,19 +238,97 @@ int runProgram(int file) {
   int sector;
   char buffer[512];
   int i;
+  int segment;
+  
+  setKernelDataSegment();
+  
+  for (segment = 0; procActive[segment] && segment < 14; segment++);
 
-  for (sector = 0; sector < 32; sector++) {
+  restoreDataSegment();
+  
+  if (segment >= 14) {
+    return 1;
+  }
+  
+  /* Copy the working directory from the launching process */
+  
+  setKernelDataSegment();
+  
+  for (i = 0; i < 512; i++) {
+    procWd[segment][i] = procWd[currentProc][i];
+  }
+  
+  restoreDataSegment();
+
+  for (sector = 0; sector < 31; sector++) {
     /* TODO: error checking on this call */
     if (fileGetSector(buffer, file, sector))
       break;
 
     for (i = 0; i < 512; i++) {
-      putInMemory(0x2000, sector*512 + i, buffer[i]);
+      putInMemory(0x2000 + 0x1000*segment, sector*512 + i, buffer[i]);
     }
 
   }
   
-  launchProgram(0x2000);
+  setKernelDataSegment();
+  
+  procActive[segment] = 1;
+  procActive[currentProc] = 0;
+  currentProc = segment;
+  
+  restoreDataSegment();
+  
+  launchProgram(0x2000 + 0x1000*segment);
+  return 0; /* Included for forward compatibility once multiprocessing is a thing */
+}
+
+void terminate() {
+  /* For now, relaunch the shell */
+  int sec;
+  int i;
+  char dirbuf[4];
+  
+  setKernelDataSegment();
+  
+  for (i = 0; i < 512; i++) {
+    procWd[currentProc][i] = procWd[0][i];
+  }
+  
+  restoreDataSegment();
+
+  sec = getRoot();
+
+  dirbuf[0] = 'b';
+  dirbuf[1] = 'i';
+  dirbuf[2] = 'n';
+  dirbuf[3] = '\0';
+  sec = findInDirectory(sec, dirbuf);
+  if (!sec) {
+    setKernelDataSegment();
+    printString("Error: no bin directory!");
+    restoreDataSegment();
+    return;
+  }
+
+  dirbuf[0] = 'w';
+  dirbuf[1] = 's';
+  dirbuf[2] = 'h';
+  dirbuf[3] = '\0';
+  sec = findInDirectory(sec, dirbuf);
+  if (!sec) {
+    setKernelDataSegment();
+    printString("Error: no shell executable!");
+    restoreDataSegment();
+    return;
+  }
+
+  setKernelDataSegment();
+  procActive[currentProc] = 0;
+  currentProc = 0;
+  restoreDataSegment();
+  
+  runProgram(sec);
 }
 
 void setWD(char *buffer) {
@@ -252,15 +337,15 @@ void setWD(char *buffer) {
   for (i = 0; buffer[i] && i < 511; i++) {
     c = buffer[i];
     setKernelDataSegment();
-    wd[i] = c;
+    procWd[currentProc][i] = c;
     restoreDataSegment();
   }
   setKernelDataSegment();
-  if (wd[i-1] != '/') {
-    wd[i] = '/';
+  if (procWd[currentProc][i-1] != '/') {
+    procWd[currentProc][i] = '/';
     i++;
   }
-  wd[i] = '\0';
+  procWd[currentProc][i] = '\0';
   restoreDataSegment();
 }
 
@@ -268,8 +353,8 @@ void getWD(char *buffer) {
   int i;
   char c;
   setKernelDataSegment();
-  for (i = 0; wd[i] && i < 511; i++) {
-    c = wd[i];
+  for (i = 0; procWd[currentProc][i] && i < 511; i++) {
+    c = procWd[currentProc][i];
     restoreDataSegment();
     buffer[i] = c;
     setKernelDataSegment();
@@ -297,6 +382,12 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x496B) {
     /* Read key */
     *((int*) bx) = readKey();
+  } else if (ax == 0x4958) {
+    /* Execute program */
+    *((int*)cx) = runProgram(bx);
+  } else if (ax == 0x4978) {
+    /* Exit program */
+    terminate();
   } else if (ax == 0x4653) {
     /* Read file sector */
     *((int*) dx) = fileGetSector((char*) bx, cx, *((int*) dx));
@@ -330,6 +421,10 @@ int handleTimerInterrupt() {
 
 void runkernel() {
   int sec;
+  int i;
+  
+  col = 7;
+  
   sec = getRoot();
   sec = findInDirectory(sec, "bin");
   if (!sec) {
@@ -341,10 +436,17 @@ void runkernel() {
     printString("Error: no shell executable!");
     return;
   }
+
+  printString("Welcome to WhirliOS.\nThis is a 16-bit OS designed by Whirligig231.\n\n");
   
   makeInterrupt21();
-  wd[0] = '/';
-  wd[1] = '\0';
-  col = 7;
+  
+  for (i = 0; i < 14; i++) {
+    procActive[i] = 0;
+  }
+  
+  procWd[0][0] = '/';
+  procWd[0][1] = '\0';
+  currentProc = 0;
   runProgram(sec);
 }
