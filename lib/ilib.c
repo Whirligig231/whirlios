@@ -12,6 +12,10 @@ void isetcolor(char col) {
   syscall(0x494B, col, 0, 0);
 }
 
+void isetpos(int row, int col) {
+  syscall(0x4950, row, col, 0);
+}
+
 void ireads(char *str) {
   syscall(0x4973, str, 0, 0);
 }

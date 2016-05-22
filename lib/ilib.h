@@ -28,6 +28,16 @@ ARGUMENTS
 void isetcolor(char col);
 
 /*
+  Sets the cursor position.
+  
+ARGUMENTS
+  row: the row on the screen (Y-position)
+  col: the column on the screen (X-position)
+*/
+
+void isetpos(int row, int col);
+
+/*
   Reads in a string from user input, prompting for a line of input. No newline will be appended, but a newline will be printed on the screen. The string will be given a null terminator.
   
   Backspace, left, and right are supported, but no other key is currently supported.

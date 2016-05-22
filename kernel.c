@@ -54,6 +54,10 @@ void setColor(char co) {
   restoreDataSegment();
 }
 
+void setPosition(char row, char col) {
+  interrupt(0x10, 0x0200, 0, 0, (row << 8) + col);
+}
+
 void printChar(char c) {
   setKernelDataSegment();
   if (c != '\r' && c != '\n' && c != 8)
@@ -371,8 +375,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     /* Print char */
     printChar((char) bx);
   } else if (ax == 0x494B) {
-    /* Print char */
+    /* Set color */
     setColor((char) bx);
+  } else if (ax == 0x4950) {
+    /* Set position */
+    setPosition((char) bx, (char) cx);
   } else if (ax == 0x4973) {
     /* Read string */
     readString((char*) bx, cx);
