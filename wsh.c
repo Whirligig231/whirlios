@@ -5,6 +5,8 @@
 void ls();
 void cd(char *dir);
 void cat(char *fname);
+void echo(char *str);
+void pwd();
 
 int main() {
   char buffer[80];
@@ -22,7 +24,7 @@ int main() {
       len = slength(buffer);
     scopy(verb, buffer, len);
     if (!scompare(verb, "help")) {
-      iwrites("\ncat: print file contents\ncd: change directories\nhelp: display this message\nls: list files\n\n");
+      iwrites("\ncat: print file contents\ncd: change directories\nhelp: display this message\nls: list files\necho: print a string\n\n");
     }
     else if (!scompare(verb, "ls")) {
       ls();
@@ -33,6 +35,12 @@ int main() {
     else if (!scompare(verb, "cat")) {
       /* Mrew? */
       cat(buffer + len + 1);
+    }
+    else if  (!scompare(verb, "echo")){
+      echo(buffer + len + 1);
+    }
+    else if  (!scompare(verb, "pwd")){
+      pwd(buffer + len + 1);
     }
     else if (!scompare(verb, "reboot")) {
       ireboot();
@@ -80,15 +88,15 @@ void ls() {
   int i;
   int type;
   filecache c;
-  
+
   finitcache(&c);
-  
+
   fgetwd(path);
   iwrites("\n-- Directory ");
   iwrites(path);
   iwrites(" --\n\n");
   dir = fget(path);
-  
+
   for (i = 0; 1; i++) {
     f = fdirget(dir, i, &c);
     if (!f)
@@ -105,7 +113,7 @@ void ls() {
     iwrites("\n");
     isetcolor(7);
   }
-  
+
   iwrites("\n");
 }
 
@@ -170,5 +178,26 @@ void cat(char *fname) {
       iwrites(buffer);
     }
   }
+  iwrites("\n");
+}
+
+void echo(char *str) {
+  int len = slength(str);
+
+  if (len <= 0) {
+    iwrites("Error: No string was provided");
+  }
+  else {
+    iwrites(str);
+  }
+
+  iwrites("\n");
+}
+
+void pwd() {
+  char *wd = "";
+  fgetwd(wd);
+
+  iwrites(wd);
   iwrites("\n");
 }
