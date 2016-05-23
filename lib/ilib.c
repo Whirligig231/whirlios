@@ -45,3 +45,7 @@ int iexec(file prog) {
 void iexit() {
   syscall(0x4978, 0, 0, 0);
 }
+
+void ireboot() {
+  syscall(0x4952, 0, 0, 0);
+}

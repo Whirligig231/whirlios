@@ -82,3 +82,9 @@ int ireadk();
 */
 
 void iexit();
+
+/*
+  Reboots the entire system. Yes, this is a huge security issue at the moment. I'll figure something out later.
+*/
+
+void ireboot();

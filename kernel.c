@@ -395,6 +395,9 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x4978) {
     /* Exit program */
     terminate();
+  } else if (ax == 0x4952) {
+    /* Reboot system */
+    reboot();
   } else if (ax == 0x4653) {
     /* Read file sector */
     *((int*) dx) = fileGetSector((char*) bx, cx, *((int*) dx));

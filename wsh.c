@@ -34,6 +34,9 @@ int main() {
       /* Mrew? */
       cat(buffer + len + 1);
     }
+    else if (!scompare(verb, "reboot")) {
+      ireboot();
+    }
     else if (sfindc(verb, '/') == -1) {
       prog = fget("/bin/");
       if (!prog) {

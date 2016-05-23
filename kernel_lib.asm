@@ -15,6 +15,7 @@
 	.global _initializeProgram
 	.global _setKernelDataSegment
 	.global _restoreDataSegment
+	.global _reboot
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
@@ -96,6 +97,16 @@ _interrupt21ServiceRoutine:
 	pop dx
 
 	iret
+	
+;void reboot()
+;does what you think it does
+_reboot:
+wait1:	in al,#0x64
+	test al,#0x02
+	jne	wait1
+	
+	mov al, #0xfe
+	out #0x64, al
 
 ;this is called to start a program that is loaded into memory
 ;void launchProgram(int segment)
