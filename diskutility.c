@@ -26,7 +26,7 @@ sector_t writeSUT() {
 void appendSector(sector_t sec) {
   sectorUsed[sec.index] = 1;
   sectors[totalSectors] = sec;
-  
+
   char name[9];
   strncpy(name, sec.data, 8);
   name[8] = '\0';
@@ -63,10 +63,10 @@ int writeFile(char *dest, char *src, int type) {
   for (int i = 0; i < 512; i++)
     buf[i] = 0;
   strncpy(buf, dest, 8);
-  
+
   buf[2] |= 0x80 & (type << 6);
   buf[3] |= 0x80 & (type << 7);
-  
+
   FILE *f = fopen(src, "r");
   if (!f) {
     printf("Error: file %s not found!\n", src);
@@ -83,7 +83,7 @@ int writeFile(char *dest, char *src, int type) {
       buf[i] = c;
       i++;
     }
-    
+
     fclose(f);
     return writeSector(buf);
   }
@@ -127,7 +127,7 @@ int writeFile(char *dest, char *src, int type) {
       buf[offset] = index >> 4;
       buf[offset+1] += (index & 0xF) << 4;
     }
-    
+
     fclose(f);
     return writeSector(buf);
   }
@@ -140,7 +140,7 @@ int writeDirectory(char *name) {
   strncpy(buf, name, 8);
   buf[2] |= 0x80;
   buf[3] |= 0x80;
-  
+
   return writeSector(buf);
 }
 
@@ -160,48 +160,48 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < 16; i++)
     sectorUsed[i] = 1;
   totalSectors = 0;
-  
+
   int root = writeDirectory("");
   int bin = writeDirectory("bin");
   addToDirectory(root, bin);
   int wsh = writeFile("wsh", "wsh.e", 2);
   addToDirectory(bin, wsh);
-  int hello = writeFile("hello", "hello.e", 2);
+  int hello = writeFile("hello", "programs/hello.e", 2);
   addToDirectory(bin, hello);
   int test = writeFile("test", "test.txt", 0);
   addToDirectory(root, test);
   int blah = writeDirectory("blah");
   addToDirectory(root, blah);
-  int hello2 = writeFile("hello", "hello2.e", 2);
+  int hello2 = writeFile("hello", "programs/hello2.e", 2);
   addToDirectory(blah, hello2);
-  
+
   appendSector(writeSUT());
-  
+
   FILE *f = fopen("whirlios.img", "rb");
   fseek(f, 0, SEEK_END);
   int len = ftell(f);
   rewind(f);
-  
+
   for (int i = 0; i < totalSectors; i++) {
     if (sectors[i].index * 512 + 512 > len)
       len = sectors[i].index + 512;
   }
-  
+
   char *floppy = malloc(len);
   for (int i = 0; i < len; i++)
     floppy[i] = 0;
   fread(floppy, 1, len, f);
   fclose(f);
-  
+
   for (int i = 0; i < totalSectors; i++) {
     int base = sectors[i].index * 512;
     memcpy(floppy + base, sectors[i].data, 512);
   }
-  
+
   f = fopen("whirlios.img", "wb");
   fwrite(floppy, 1, len, f);
   fclose(f);
-  
+
   free(floppy);
   return 0;
 }

@@ -1,4 +1,4 @@
-#include "flib.h"
+     #include "flib.h"
 #include "slib.h"
 
 void finitcache(filecache *c) {
@@ -45,7 +45,7 @@ int freadb(file f, int byte, filecache *c) {
       return F_ERR;
     }
   }
-    
+
   return c->sectorData[offset];
 }
 
@@ -79,12 +79,12 @@ void fexpand(char *dest, char *src) {
     dest[1] = '\0';
     ind = 1;
   }
-  
+
   while (ind < len) {
     nextslash = sfindc(src + ind, '/');
     if (nextslash < 0)
       nextslash = len - ind;
-    
+
     scopy(buffer, src + ind, nextslash);
     if (!scompare(buffer, ".")) {
       /* Do nothing */
@@ -104,7 +104,7 @@ void fexpand(char *dest, char *src) {
       sconcat(dest, buffer);
       sconcat(dest, "/");
     }
-    
+
     ind += nextslash + 1;
   }
 
@@ -116,22 +116,22 @@ file fget(char *path) {
   char buffer[512];
   int ind = 1;
   int nextslash;
-  int len; 
+  int len;
   file f = froot();
 
   fexpand(epath, path);
-  
+
   len = slength(epath);
   while (ind < len) {
     nextslash = sfindc(epath + ind, '/');
     if (nextslash < 0)
       nextslash = len - ind;
-    
+
     scopy(buffer, epath + ind, nextslash);
     f = ffind(f, buffer);
     if (f == 0)
       return f;
-    
+
     ind += nextslash + 1;
   }
 
