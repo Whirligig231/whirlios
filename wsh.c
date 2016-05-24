@@ -24,7 +24,7 @@ int main() {
       len = slength(buffer);
     scopy(verb, buffer, len);
     if (!scompare(verb, "help")) {
-      iwrites("\ncat: print file contents\ncd: change directories\nhelp: display this message\nls: list files\necho: print a string\n\n");
+      iwrites("\ncat: print file contents\ncd: change directories\necho: print a string\nhelp: display this message\nls: list files\npwd: print current working directory\n\n");
     }
     else if (!scompare(verb, "ls")) {
       ls();
@@ -195,7 +195,7 @@ void echo(char *str) {
 }
 
 void pwd() {
-  char *wd = "";
+  char wd[512];
   fgetwd(wd);
 
   iwrites(wd);
