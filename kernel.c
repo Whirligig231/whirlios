@@ -151,6 +151,10 @@ void readSector(char *buffer, int sector) {
   interrupt(0x13, 0x0201, buffer, ((div(sector, 36) << 8) | mod(sector, 18)) + 1, (div(sector, 18) & 1) << 8);
 }
 
+void writeSector(char *buffer, int sector) {
+  interrupt(0x13, 0x0301, buffer, ((div(sector, 36) << 8) | mod(sector, 18)) + 1, (div(sector, 18) & 1) << 8);
+}
+
 int fileGetSector(char *buffer, int file, int sector) {
   /* TODO: Make this not suck as much (currently it does two reads sometimes, which could theoretically be helped) */
   int indexFlags;
