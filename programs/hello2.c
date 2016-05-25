@@ -1,4 +1,4 @@
-#include "lib/ilib.h"
+#include "../lib/ilib.h"
 
 int main() {
 	iwrites("Hello again!\n");
