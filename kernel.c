@@ -190,6 +190,112 @@ int fileGetSector(char *buffer, int file, int sector) {
   return 0;
 }
 
+int findFreeSector() {
+  /* Note that this will also mark the sector as non-free in the SUT */
+  char sut[512];
+  int i;
+  int byte, bit;
+  readSector(sut, 1);
+  for (i = 0; i < 4096; i++) {
+    byte = i >> 3;
+    bit = 7 - (i & 0x7);
+    if (!(sut[byte] & (1 << bit))) {
+      sut[byte] |= 1 << bit;
+      writeSector(sut, 1);
+      return i;
+    }
+  }
+  return -1;
+}
+
+int filePutSector(char *buffer, int file, int sector) {
+  int indexFlags;
+  char buf[512];
+  char buf2[512];
+  int i;
+  int index;
+  int newSector;
+  readSector(buf, file);
+  indexFlags = ((buf[0] & 0x80) >> 6) + ((buf[1] & 0x80) >> 7);
+  if (indexFlags == 0) {
+    /* Unindexed file */
+    if (sector > 1)
+      return 1; /* EOF */
+    if (sector == 0 && !buffer[504] && !buffer[505] && !buffer[506] && !buffer[507]
+        && !buffer[508] && !buffer[509] && !buffer[510] && !buffer[511]) {
+      /* Can be kept unindexed */
+      for (i = 0; i < 504; i++)
+        buf[i + 8] = buffer[i];
+      writeSector(buf, file);
+    }
+    else {
+      /* "Sector fault": convert to singly indexed and try again */
+      newSector = findFreeSector();
+      for (i = 0; i < 504; i++)
+        buf2[i] = buf[i+8];
+      for (i = 504; i < 512; i++)
+        buf2[i] = 0;
+      buf[1] |= 0x80;
+      buf[8] = newSector >> 4;
+      buf[9] = (newSector & 0xF) << 4;
+      for (i = 10; i < 512; i++)
+        buf[i] = 0;
+      writeSector(buf, file);
+      writeSector(buf2, newSector);
+      return filePutSector(buffer, file, sector);
+    }
+  }
+  else if (indexFlags == 1) {
+    /* Singly indexed file */
+    if (sector < 0 || sector >= 336)
+      return 2; /* Would need doubly indexed */
+    /* Check if the previous sector exists */
+    if ((sector - 1) & 1) {
+      index = ((buf[9+3*((sector - 1) >> 1)] & 0x0F) << 8) + buf[10+3*((sector - 1) >> 1)];
+    } else {
+      index = (buf[8+3*((sector - 1) >> 1)] << 4) + ((buf[9+3*((sector - 1) >> 1)] & 0xF0) >> 4);
+    }
+    if (!index)
+      return 1; /* EOF */
+    /* Now check the current sector */
+    if ((sector) & 1) {
+      index = ((buf[9+3*(sector >> 1)] & 0x0F) << 8) + buf[10+3*(sector >> 1)];
+    } else {
+      index = (buf[8+3*(sector >> 1)] << 4) + ((buf[9+3*(sector >> 1)] & 0xF0) >> 4);
+    }
+    if (!index) {
+      /* Add an entry to the indexing table */
+      index = findFreeSector();
+      if ((sector) & 1) {
+        buf[9+3*(sector >> 1)] |= index >> 8;
+        buf[10+3*(sector >> 1)] = index & 0xFF;
+      } else {
+        buf[8+3*(sector >> 1)] = index >> 4;
+        buf[9+3*(sector >> 1)] |= (index & 0xF) << 4;
+      }
+    }
+    writeSector(buffer, index);
+  }
+  else {
+    return 2; /* Unsupported indexing mode */
+  }
+  return 0;
+}
+
+int createFile(char *fname, int type) {
+  char buf[512];
+  int i;
+  int f = findFreeSector();
+  for (i = 0; i < 512; i++)
+    buf[i] = 0;
+  for (i = 0; i < 8 && fname[i]; i++)
+    buf[i] = fname[i] & 0x7F;
+  buf[2] |= (type & 0x2) << 6;
+  buf[3] |= (type & 0x1) << 7;
+  writeSector(buf, f);
+  return f;
+}
+
 void getFname(char *buffer, int file) {
   char buf[512];
   int i;
@@ -209,6 +315,33 @@ int getFtype(int file) {
 
 int getRoot() {
   return 16;
+}
+
+int addToDirectory(int directory, int f) {
+  char buf[512];
+  int sector = -1;
+  int i = 510, j;
+  int errcode;
+  int current;
+  do {
+    i += 2;
+    if (!(i & 0x1FF)) {
+      i = 0;
+      sector++;
+      errcode = fileGetSector(buf, directory, sector);
+      if (errcode == 2)
+        return 2;
+      else if (errcode == 1) {
+        for (j = 0; j < 512; j++)
+          buf[j] = 0;
+      }
+    }
+    current = buf[i] + (buf[i+1] << 8);
+  } while (current);
+  buf[i] = f & 0xFF;
+  buf[i+1] = f >> 8;
+  filePutSector(buf, directory, sector);
+  return 0;
 }
 
 int findInDirectory(int directory, char *name) {
@@ -436,10 +569,15 @@ int handleTimerInterrupt() {
 void runkernel() {
   int sec;
   int i;
+  int f;
   
   col = 7;
   
   sec = getRoot();
+  /* Test making a file! */
+  f = createFile("foobar", 0);
+  filePutSector("I like trains.", f, 0);
+  addToDirectory(sec, f);
   sec = findInDirectory(sec, "bin");
   if (!sec) {
     printString("Error: no bin directory!");
