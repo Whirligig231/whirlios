@@ -319,10 +319,16 @@ int getRoot() {
 
 int addToDirectory(int directory, int f) {
   char buf[512];
+  char name[9];
   int sector = -1;
   int i = 510, j;
   int errcode;
   int current;
+  for (j = 0; j < 9; j++)
+    name[j] = '\0';
+  getFname(name, f);
+  if (findInDirectory(directory, name))
+    return 3; /* File name conflict */
   do {
     i += 2;
     if (!(i & 0x1FF)) {
@@ -340,8 +346,7 @@ int addToDirectory(int directory, int f) {
   } while (current);
   buf[i] = f & 0xFF;
   buf[i+1] = f >> 8;
-  filePutSector(buf, directory, sector);
-  return 0;
+  return filePutSector(buf, directory, sector);
 }
 
 int findInDirectory(int directory, char *name) {
