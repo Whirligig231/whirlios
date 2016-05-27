@@ -41,19 +41,25 @@ wsh.o: wsh.c lib/ilib.h lib/slib.h lib/flib.h
 wsh.e: wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 	ld86 -o wsh.e -d wsh.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o lib/flib.o
 
-programs/hello.o: programs/hello.c lib/ilib.h lib/flib.h
+programs/hello.o: programs/hello.c lib/ilib.h
 	bcc -ansi -c -o programs/hello.o programs/hello.c
 
 programs/hello.e: programs/hello.o lib/syscall.o lib/ilib.o
 	ld86 -o programs/hello.e -d programs/hello.o lib/syscall.o lib/ilib.o
 
-programs/hello2.o: programs/hello2.c lib/ilib.h lib/flib.h
+programs/hello2.o: programs/hello2.c lib/ilib.h
 	bcc -ansi -c -o programs/hello2.o programs/hello2.c
 
 programs/hello2.e: programs/hello2.o lib/syscall.o lib/ilib.o
 	ld86 -o programs/hello2.e -d programs/hello2.o lib/syscall.o lib/ilib.o
 
-whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e programs/hello.e programs/hello2.e
+programs/calc.o: programs/calc.c lib/ilib.h lib/mlib.h lib/slib.h
+	bcc -ansi -c -o programs/calc.o programs/calc.c
+
+programs/calc.e: programs/calc.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
+	ld86 -o programs/calc.e -d programs/calc.o lib/syscall.o lib/ilib.o lib/mlib.o lib/slib.o
+
+whirlios.img: diskutility bootload.e kernel.e test.txt wsh.e programs/hello.e programs/hello2.e programs/calc.e
 	dd if=/dev/zero of=whirlios.img bs=512 count=2880
 	dd if=bootload.e of=whirlios.img bs=512 count=1 conv=notrunc
 	dd if=kernel.e of=whirlios.img bs=512 conv=notrunc seek=2

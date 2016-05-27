@@ -168,6 +168,8 @@ int main(int argc, char *argv[]) {
   addToDirectory(bin, wsh);
   int hello = writeFile("hello", "programs/hello.e", 2);
   addToDirectory(bin, hello);
+  int calc = writeFile("calc", "programs/calc.e", 2);
+  addToDirectory(bin, calc);
   int test = writeFile("test", "test.txt", 0);
   addToDirectory(root, test);
   int blah = writeDirectory("blah");
