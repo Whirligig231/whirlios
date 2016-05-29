@@ -16,12 +16,12 @@ void isetpos(int row, int col) {
   syscall(0x4950, row, col, 0);
 }
 
-void ireads(char *str) {
-  syscall(0x4973, str, 0, 0);
+void ireads(char *str, int maxlen) {
+  syscall(0x4973, str, 0, maxlen);
 }
 
-void ireadps(char *str) {
-  syscall(0x4973, str, 1, 0);
+void ireadps(char *str, int maxlen) {
+  syscall(0x4973, str, 1, maxlen);
 }
 
 char ireadc() {

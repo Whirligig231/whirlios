@@ -83,8 +83,7 @@ int readKey() {
   return interrupt(0x16, 0, 0, 0, 0);
 }
 
-void readString(char *str, int protect) {
-  /* TODO: Remove buffer overflow */
+void readString(char *str, int protect, int len) {
   int i, max, j;
   int key;
   char ch;
@@ -134,13 +133,14 @@ void readString(char *str, int protect) {
       continue;
     }
     
-    str[i] = ch;
-    printChar(protect ? '*' : ch);
-    i++;
+    if (i < len-1) {
+      str[i] = ch;
+      printChar(protect ? '*' : ch); 
+      i++;
+    }
     if (i > max)
       max = i;
   }
-  
   
   str[max] = '\0';
   printChar('\r');
@@ -524,7 +524,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     setPosition((char) bx, (char) cx);
   } else if (ax == 0x4973) {
     /* Read string */
-    readString((char*) bx, cx);
+    readString((char*) bx, cx, dx);
   } else if (ax == 0x4963) {
     /* Read char */
     *((char*) bx) = readChar();

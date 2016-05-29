@@ -18,7 +18,7 @@ int main() {
     fgetwd(wd);
     iwrites(wd);
     iwrites("> ");
-    ireads(buffer);
+    ireads(buffer, 80);
     len = sfindc(buffer, ' ');
     if (len < 0)
       len = slength(buffer);

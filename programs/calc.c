@@ -3,10 +3,10 @@
 #include "../lib/slib.h"
 
 int main() {
-char op[3];
-char num1[4];
+char op[4];
+char num1[7];
 int num11 = 0;
-char num2[4];
+char num2[7];
 int num22 = 0;
 int len1;
 int len2;
@@ -15,11 +15,11 @@ int ans;
 char str[7];
 
 iwrites("add, sub, div, or mul?\n");
-ireads(op);
+ireads(op, 4);
 iwrites("\nfirst number?\n");
-ireads(num1);
+ireads(num1, 7);
 iwrites("\nsecond number?\n");
-ireads(num2);
+ireads(num2, 7);
 iwrites("\n");
 
 len1 = slength(num1);
