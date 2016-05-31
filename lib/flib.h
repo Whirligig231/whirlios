@@ -149,3 +149,29 @@ RETURNS
   the file pointer, or 0 if there are not that many files
 */
 file fdirget(file dir, int index, filecache *c);
+
+/*
+  Writes a sector to a file.
+
+ARGUMENTS
+  buffer: buffer (512 B) containing the data
+  f: the file to write to (must exist)
+  sector: the sector to write within this file
+
+RETURNS
+  0 if correctly written, 1 if EOF, 2 if there was another error
+*/
+int fwrites(char *buffer, file f, int sector);
+
+/*
+  Creates a new file in a directory.
+
+ARGUMENTS
+  dir: the directory into which to put the file (as a number)
+  fname: the name of the file to create
+  ftype: the type of the file
+  
+RETURNS
+  0 if created successfully, 1 if EOF, 2 if there was an unknown error, 3 if there is already a file by that name
+*/
+int fcreate(file dir, char *fname, int ftype);

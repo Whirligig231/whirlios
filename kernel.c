@@ -510,6 +510,7 @@ void getWD(char *buffer) {
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
+  int tmp;
   if (ax == 0x4953) {
     /* Print string */
     printString((char*) bx);
@@ -561,6 +562,13 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   } else if (ax == 0x4674) {
     /* Get file type */
     *((int*)cx) = getFtype(bx);
+  } else if (ax == 0x4643) {
+    /* Create file */
+    tmp = createFile((char*) cx, *((int*) dx));
+    *((int*) dx) = addToDirectory(bx, tmp);
+  } else if (ax == 0x4673) {
+    /* Write file sector */
+    *((int*) dx) = filePutSector((char*) bx, cx, *((int*) dx));
   } else {
     /* Incorrect interrupt -- for now, do nothing */
     return;

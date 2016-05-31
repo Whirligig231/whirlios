@@ -1,4 +1,4 @@
-     #include "flib.h"
+#include "flib.h"
 #include "slib.h"
 
 void finitcache(filecache *c) {
@@ -160,4 +160,14 @@ file fdirget(file dir, int index, filecache *c) {
     return 0;
   retvalue |= (byte << 8);
   return retvalue;
+}
+
+int fwrites(char *buffer, file f, int sector) {
+  syscall(0x4673, buffer, f, &sector);
+  return sector; /* reuse input parameter as output parameter */
+}
+
+int fcreate(file dir, char *fname, int ftype) {
+  syscall(0x4643, dir, fname, &ftype);
+  return ftype; /* reuse input parameter as output parameter */
 }
